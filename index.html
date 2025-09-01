@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🪑Galvan's shop</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <script type="module" src="firebase.js"></script>
+  <script type="module" src="script.js"></script>
+</head>
+<body>
+  <!-- === PANTALLA DE CARGA === -->
+  <div id="loader">
+    <img src="img/logo.png" alt="Logo de Galvan's shop" class="loader-logo">
+  </div>
+
+  <!-- === CONTENIDO PRINCIPAL === -->
+  <div class="main-content">
+    <header>
+      <div class="floating-tools">
+        <div class="tool">🔨</div>
+        <div class="tool">🪚</div>
+        <div class="tool">📐</div>
+        <div class="tool">🪓</div>
+      </div>
+      <img src="img/logo.png" alt="Logo de Galvan's shop" class="logo">
+      <h1> Muebles a credito</h1>
+      <p> Muebles de madera hechos con tradición </p>
+    </header>
+
+    <!-- === CATÁLOGO === -->
+    <main id="catalogo"></main>
+
+    <!-- === MODAL DE PRODUCTO === -->
+    <div id="modal-producto" class="modal-overlay">
+      <div class="modal-content">
+        <button id="modal-close" class="modal-close">×</button>
+        <img id="modal-img" class="modal-image" src="" alt="Imagen del producto">
+        <h2 id="modal-nombre"></h2>
+        <div id="modal-detalles"></div>
+        <div class="payment-info">
+          <h3>💳 Opciones de Pago</h3>
+          <div class="payment-steps">
+            <div class="step">
+              <div class="step-icon">💰</div>
+              <p><strong>Contado</strong><br>10% descuento</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">📋</div>
+              <p><strong>Cuotas</strong><br>Sin interés</p>
+            </div>
+            <div class="step">
+              <div class="step-icon">🚚</div>
+              <p><strong>Envío</strong><br>Gratis</p>
+            </div>
+          </div>
+          <div class="contact-info">
+            <h4>📞 ¿Interesado? Contactanos:</h4>
+            <p><strong>WhatsApp:</strong> +54 3482373872</p>
+            <p><strong>Email:</strong> info@Galvan.com</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- === PANEL FORMULARIO === -->
+    <div id="formulario-panel">
+      <h3 id="form-titulo">🛠️ Agregar Mueble</h3>
+      
+      <label for="form-nombre">📝 Nombre del mueble:</label>
+      <input type="text" id="form-nombre" placeholder="Ej: Mesa de comedor rústica">
+      
+      <label for="form-precio">💰 Precio total (\$):</label>
+      <input type="number" id="form-precio" placeholder="500">
+      
+      <label for="form-cuotas">📊 Número de cuotas:</label>
+      <input type="number" id="form-cuotas" placeholder="5">
+      
+      <label for="form-medidas">📏 Medidas:</label>
+      <input type="text" id="form-medidas" placeholder="1.8m x 0.9m x 0.75m">
+      
+      <label for="form-color">🎨 Color/Madera:</label>
+      <input type="text" id="form-color" placeholder="Nogal, Roble, Pino, etc.">
+      
+      <label for="form-disponible">📦 Disponibilidad:</label>
+      <select id="form-disponible">
+        <option value="true">✅ Disponible</option>
+        <option value="false">❌ No disponible</option>
+      </select>
+      
+      <label for="form-imagen">🖼️ Imagen del producto:</label>
+<input type="file" id="form-imagen" accept="image/*">
+      
+      <div class="form-botones">
+        <button id="guardar-btn" class="btn-guardar">💾 Guardar</button>
+        <button id="cancelar-btn" class="btn-cancelar">❌ Cancelar</button>
+      </div>
+    </div>
+    
+    <!-- Este overlay se usa para cerrar el formulario al hacer clic fuera -->
+    <div id="overlay-form"></div>
+
+    <!-- === BOTÓN ADMIN === -->
+    <button id="admin-btn" class="admin-btn">🔑</button>
+
+    <!-- === FOOTER === -->
+    <footer>
+      <div class="footer-tools">🔨 ⚒️ 🪚 📐 🪓</div>
+      <p><strong>© 2025 Galvan's shop</strong></p>
+      <p>✨ Transformando madera en sueños desde 2018 ✨</p>
+      <p>📍 Reconquista Santa Fe, Argentina | 📞 +54 3482373872 | 📧 info@Galvansshop.com</p>
+    </footer>
+  </div>
+</body>
+</html>
