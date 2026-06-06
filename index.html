@@ -3,94 +3,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🪑Galvan's shop</title>
+  <title>🪑 Galvan's Shop - Muebles a Crédito</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,400&family=Montserrat:wght@200;400;600&display=swap" rel="stylesheet">
+  
   <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
-  <script type="module" src="firebase.js"></script>
-  <script type="module" src="script.js"></script>
 </head>
 <body>
-  <!-- === PANTALLA DE CARGA === -->
+
   <div id="loader">
-    <img src="img/logo.png" alt="Logo de Galvan's shop" class="loader-logo">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <p>Cargando tienda...</p>
+    </div>
   </div>
 
-  <!-- === CONTENIDO PRINCIPAL === -->
+  <div id="toast-container"></div>
+
   <div class="main-content">
-    <header>
-      <div class="floating-tools">
-        <div class="tool">🔨</div>
-        <div class="tool">🪚</div>
-        <div class="tool">📐</div>
-        <div class="tool">🪓</div>
+    
+    <nav class="navbar">
+      <div class="nav-container">
+        <div class="logo">Galvan<span>'s</span></div>
+        <button id="admin-btn" class="btn-admin-nav">ADMIN</button>
       </div>
-      <img src="img/logo.png" alt="Logo de Galvan's shop" class="logo">
-      <h1> Muebles a credito</h1>
-      <p> Muebles de madera hechos con tradición </p>
+    </nav>
+
+    <header class="hero-banner">
+      <div class="hero-bg">
+        <div class="video-overlay"></div>
+        <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=2000" alt="Interiorismo" class="hero-img">
+      </div>
+      <div class="hero-content-modern">
+        <div class="hero-header">
+          <span class="line-reveal">ESTUDIO GALVÁN</span>
+        </div>
+        <h1 class="hero-title-main">MUEBLES<br><span class="outline-text">A CRÉDITO</span></h1>
+        <p class="hero-description">Piezas únicas fabricadas a mano donde la materia prima dicta la forma.</p>
+        <div class="hero-scroll"><span>EXPLORAR</span><div class="scroll-line"></div></div>
+      </div>
     </header>
 
-    <!-- === CATÁLOGO === -->
     <main id="catalogo"></main>
 
-    <!-- === MODAL DE PRODUCTO === -->
     <div id="modal-producto" class="modal-overlay">
       <div class="modal-content">
-        <button id="modal-close" class="modal-close">×</button>
-        <img id="modal-img" class="modal-image" src="" alt="Imagen del producto">
-        <h2 id="modal-nombre"></h2>
-        <div id="modal-detalles"></div>
-        <div class="payment-info">
-          <h3>💳 Opciones de Pago</h3>
-          <div class="payment-steps">
-            <div class="step">
-              <div class="step-icon">💰</div>
-              <p><strong>Contado</strong><br>10% descuento</p>
+        <button id="modal-close" class="modal-close" aria-label="Cerrar modal">✕</button>
+        <div class="modal-grid">
+          <div class="modal-visual">
+            <div id="modal-gallery" class="modal-gallery">
+              <!-- Imágenes inyectadas por JS -->
             </div>
-            <div class="step">
-              <div class="step-icon">📋</div>
-              <p><strong>Cuotas</strong><br>Sin interés</p>
-            </div>
-            <div class="step">
-              <div class="step-icon">🚚</div>
-              <p><strong>Envío</strong><br>Gratis</p>
-            </div>
+            <button id="prev-photo" class="gallery-nav prev" aria-label="Imagen anterior">‹</button>
+            <button id="next-photo" class="gallery-nav next" aria-label="Siguiente imagen">›</button>
+            <div id="gallery-dots" class="gallery-dots"></div>
           </div>
-          <div class="contact-info">
-            <h4>📞 ¿Interesado? Contactanos:</h4>
-            <p><strong>WhatsApp:</strong> +54 3482373872</p>
-            <p><strong>Email:</strong> info@Galvan.com</p>
+          <div class="modal-info">
+            <h2 id="modal-nombre"></h2>
+            <div id="modal-detalles"></div>
+            <div class="modal-actions">
+              <a href="https://wa.me/543482373872" target="_blank" class="btn-whatsapp" rel="noopener noreferrer">
+                CONSULTAR POR WHATSAPP
+              </a>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- === PANEL FORMULARIO === -->
+    <div id="login-modal" class="modal-overlay">
+      <div class="modal-content login-box">
+        <h3>Acceso Administrativo</h3>
+        <p>Introduce la clave maestra para gestionar el inventario de la tienda.</p>
+        <input type="password" id="login-password" placeholder="Clave Maestra">
+        <div class="form-botones">
+          <button id="confirm-login" class="btn-guardar">Entrar</button>
+          <button id="close-login" class="btn-cancelar">Cancelar</button>
+        </div>
+      </div>
+    </div>
+
     <div id="formulario-panel">
       <h3 id="form-titulo">🛠️ Agregar Mueble</h3>
       
-      <label for="form-nombre">📝 Nombre del mueble:</label>
-      <input type="text" id="form-nombre" placeholder="Ej: Mesa de comedor rústica">
-      
-      <label for="form-precio">💰 Precio total (\$):</label>
-      <input type="number" id="form-precio" placeholder="500">
-      
-      <label for="form-cuotas">📊 Número de cuotas:</label>
-      <input type="number" id="form-cuotas" placeholder="5">
-      
-      <label for="form-medidas">📏 Medidas:</label>
-      <input type="text" id="form-medidas" placeholder="1.8m x 0.9m x 0.75m">
-      
-      <label for="form-color">🎨 Color/Madera:</label>
-      <input type="text" id="form-color" placeholder="Nogal, Roble, Pino, etc.">
-      
-      <label for="form-disponible">📦 Disponibilidad:</label>
-      <select id="form-disponible">
-        <option value="true">✅ Disponible</option>
-        <option value="false">❌ No disponible</option>
-      </select>
-      
-      <label for="form-imagen">🖼️ Imagen del producto:</label>
-<input type="file" id="form-imagen" accept="image/*">
+      <div class="form-container-scroll">
+        <div class="form-group">
+          <label for="form-nombre">📝 Nombre del mueble:</label>
+          <input type="text" id="form-nombre" placeholder="Ej: Mesa de comedor rústica">
+        </div>
+        
+        <div class="form-group">
+          <label for="form-precio">💰 Precio total ($):</label>
+          <input type="number" id="form-precio" placeholder="500">
+        </div>
+        
+        <div class="form-group">
+          <label for="form-cuotas">📊 Número de cuotas:</label>
+          <input type="number" id="form-cuotas" placeholder="5">
+        </div>
+        
+        <div class="form-group">
+          <label for="form-medidas">📏 Medidas:</label>
+          <input type="text" id="form-medidas" placeholder="1.8m x 0.9m x 0.75m">
+        </div>
+        
+        <div class="form-group">
+          <label for="form-color">🎨 Color / Madera:</label>
+          <input type="text" id="form-color" placeholder="Nogal, Roble, Pino, etc.">
+        </div>
+        
+        <div class="form-group">
+          <label for="form-disponible">📦 Disponibilidad:</label>
+          <select id="form-disponible">
+            <option value="true">✅ Disponible</option>
+            <option value="false">❌ No disponible</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>🖼️ Imágenes (Máx 3):</label>
+          <div class="multi-upload-container">
+            <div class="upload-slot">
+              <input type="file" class="form-imagen-input" data-index="0" accept="image/*">
+              <div class="image-preview" data-index="0">1</div>
+            </div>
+            <div class="upload-slot">
+              <input type="file" class="form-imagen-input" data-index="1" accept="image/*">
+              <div class="image-preview" data-index="1">2</div>
+            </div>
+            <div class="upload-slot">
+              <input type="file" class="form-imagen-input" data-index="2" accept="image/*">
+              <div class="image-preview" data-index="2">3</div>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <div class="form-botones">
         <button id="guardar-btn" class="btn-guardar">💾 Guardar</button>
@@ -98,19 +147,53 @@
       </div>
     </div>
     
-    <!-- Este overlay se usa para cerrar el formulario al hacer clic fuera -->
     <div id="overlay-form"></div>
 
-    <!-- === BOTÓN ADMIN === -->
-    <button id="admin-btn" class="admin-btn">🔑</button>
-
-    <!-- === FOOTER === -->
     <footer>
-      <div class="footer-tools">🔨 ⚒️ 🪚 📐 🪓</div>
-      <p><strong>© 2025 Galvan's shop</strong></p>
-      <p>✨ Transformando madera en sueños desde 2018 ✨</p>
-      <p>📍 Reconquista Santa Fe, Argentina | 📞 +54 3482373872 | 📧 info@Galvansshop.com</p>
+      <div class="footer-grid-container">
+        <div class="footer-brand">
+          <div class="logo">Galvan<span>'s</span></div>
+          <p class="brand-statement">Mobiliario de autor diseñado para trascender generaciones. Artesanía argentina con visión contemporánea.</p>
+        </div>
+        
+        <div class="footer-nav">
+          <h4>Explorar</h4>
+          <ul>
+            <li><a href="#">Colección 2026</a></li>
+            <li><a href="#catalogo">Catálogo</a></li>
+            <li><a href="#">Proyectos</a></li>
+            <li><a href="#">Sustentabilidad</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-contact">
+          <h4>Contacto</h4>
+          <p>Reconquista, Santa Fe, AR</p>
+          <p>estudio@galvan.com</p>
+          <p>+54 3482 373872</p>
+          <div class="footer-socials">
+            <a href="#">INSTAGRAM</a>
+            <a href="#">PINTEREST</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 GALVÁN STUDIO. TODOS LOS DERECHOS RESERVADOS.</p>
+      </div>
     </footer>
   </div>
+
+  <script>
+    if (window.location.protocol === 'file:') {
+      const loaderText = document.querySelector('#loader p');
+      const loaderSpinner = document.querySelector('.loader-spinner');
+      if (loaderText && loaderSpinner) {
+        loaderText.innerHTML = '<b style="color: #ff4d4d;">⚠️ Error de Seguridad:</b><br>No puedes abrir este archivo haciendo doble clic.<br><br>Por favor, usa <b>Live Server</b> en VS Code para que las conexiones carguen correctamente.';
+        loaderSpinner.style.borderTop = '4px solid #ff4d4d';
+      }
+    }
+  </script>
+
+  <script src="script.js" type="module"></script>
 </body>
 </html>
