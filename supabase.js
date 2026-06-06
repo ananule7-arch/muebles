@@ -1,71 +1,101 @@
-// firebase.js
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
-import { 
-  getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc 
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-firestore.js";
-import { 
-  getStorage, ref, uploadBytes, getDownloadURL, deleteObject 
-} from "https://www.gstatic.com/firebasejs/10.13.2/firebase-storage.js";
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-// 🔹 Configuración de Firebase (copia la tuya desde Firebase Console)
-const firebaseConfig = {
-    apiKey: "AIzaSyBI5XAy59QQfLq6ECFujVN2phNUpbhv9PI",
-    authDomain: "galvanshop-a9e93.firebaseapp.com",
-    projectId: "galvanshop-a9e93",
-    storageBucket: "galvanshop-a9e93.firebasestorage.app",
-    messagingSenderId: "741169067846",
-    appId: "1:741169067846:web:f4c42bfd49406b43d09747",
-    measurementId: "G-DVP86RFF6D"
-  };
-// Inicializar Firebase
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const storage = getStorage(app);
+// 🔹 Configuración de Supabase
+// Reemplaza estos valores con los de tu proyecto en Supabase (Settings -> API)
+const supabaseUrl = 'https://jddulfxdxftjomdqfusy.supabase.co'
+const supabaseKey = 'sb_publishable_EsFMF5OCX2Pxqxmh7eAKew_dKXHKHrH'
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-// === FUNCIONES FIRESTORE + STORAGE ===
+// === FUNCIONES SUPABASE ===
+
+// 🔐 Autenticación
+export async function login(password) {
+  // Usamos un correo interno fijo para que solo necesites la contraseña
+  const email = "admin@muebles.com"; 
+  const { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
+  if (error) throw error;
+  return data.user;
+}
+
+export async function logout() {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+}
+
+export async function obtenerUsuarioActual() {
+  const { data: { user }, error } = await supabase.auth.getUser();
+  if (error) return null;
+  return user;
+}
 
 // 📥 Obtener productos
 export async function obtenerProductos() {
-  const querySnapshot = await getDocs(collection(db, "productos"));
-  const productos = [];
-  querySnapshot.forEach(docSnap => {
-    productos.push({ id: docSnap.id, ...docSnap.data() });
-  });
-  return productos;
+  const { data, error } = await supabase
+    .from('productos')
+    .select('*')
+    .order('id', { ascending: false });
+  
+  if (error) {
+    console.error("Error al obtener productos:", error.message);
+    return [];
+  }
+  return data;
 }
 
 // ➕ Agregar producto
-export async function agregarProducto(producto, archivoImagen) {
-  let urlImagen = producto.imagen;
-  if (archivoImagen) {
-    const storageRef = ref(storage, "productos/" + archivoImagen.name);
-    await uploadBytes(storageRef, archivoImagen);
-    urlImagen = await getDownloadURL(storageRef);
+export async function agregarProducto(producto, archivosImagenes) {
+  const urlsImagenes = [];
+
+  for (const archivo of archivosImagenes) {
+    if (archivo) {
+      const fileName = `${Date.now()}-${archivo.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('productos')
+        .upload(fileName, archivo);
+
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('productos').getPublicUrl(fileName);
+      urlsImagenes.push(data.publicUrl);
+    }
   }
-  await addDoc(collection(db, "productos"), { ...producto, imagen: urlImagen });
+
+  const { error } = await supabase
+    .from('productos')
+    .insert([{ ...producto, imagenes: urlsImagenes }]);
+
+  if (error) throw error;
 }
 
 // ✏️ Editar producto
-export async function actualizarProducto(id, producto, archivoImagen) {
-  let urlImagen = producto.imagen;
-  if (archivoImagen) {
-    const storageRef = ref(storage, "productos/" + archivoImagen.name);
-    await uploadBytes(storageRef, archivoImagen);
-    urlImagen = await getDownloadURL(storageRef);
+export async function actualizarProducto(id, producto, archivosNuevos, imagenesExistentes) {
+  const urlsFinales = [...imagenesExistentes];
+
+  for (let i = 0; i < archivosNuevos.length; i++) {
+    const archivo = archivosNuevos[i];
+    if (archivo) {
+      const fileName = `${Date.now()}-${archivo.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from('productos')
+        .upload(fileName, archivo);
+      
+      if (uploadError) throw uploadError;
+
+      const { data } = supabase.storage.from('productos').getPublicUrl(fileName);
+      urlsFinales[i] = data.publicUrl; // Reemplaza la imagen en esa posición
+    }
   }
-  const docRef = doc(db, "productos", id);
-  await updateDoc(docRef, { ...producto, imagen: urlImagen });
+
+  const { error } = await supabase
+    .from('productos')
+    .update({ ...producto, imagenes: urlsFinales.filter(url => url) })
+    .eq('id', id);
+
+  if (error) throw error;
 }
 
 // 🗑️ Eliminar producto
-export async function eliminarProductoDB(id, urlImagen) {
-  if (urlImagen) {
-    try {
-      const imgRef = ref(storage, urlImagen);
-      await deleteObject(imgRef);
-    } catch (e) {
-      console.warn("No se pudo borrar la imagen:", e);
-    }
-  }
-  await deleteDoc(doc(db, "productos", id));
+export async function eliminarProductoDB(id) {
+  const { error } = await supabase.from('productos').delete().eq('id', id);
+  if (error) throw error;
 }
