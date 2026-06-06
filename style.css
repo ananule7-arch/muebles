@@ -189,12 +189,83 @@ body::before {
   letter-spacing: 1px;
 }
 
+.hero-scroll {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 4rem;
+  cursor: pointer; /* Hace que aparezca la manito */
+  transition: var(--transition-smooth);
+}
+
+.hero-scroll span {
+  font-size: 0.75rem;
+  letter-spacing: 4px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  transition: var(--transition-fast);
+}
+
+.scroll-line {
+  width: 50px;
+  height: 1px;
+  background: var(--color-secundario);
+  transition: var(--transition-bounce);
+}
+
+.hero-scroll:hover .scroll-line { width: 90px; }
+.hero-scroll:hover span { color: white; }
+
+.btn-explorar {
+  display: inline-block;
+  margin-top: 3rem;
+  padding: 1.2rem 3.5rem;
+  background: var(--color-secundario);
+  color: var(--color-primario);
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  cursor: pointer;
+  transition: var(--transition-bounce);
+}
+
+/* === FILTROS DE CATEGORÍA === */
+.filtros-container {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  padding: 4rem 3rem 0;
+  flex-wrap: wrap;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.filter-btn {
+  background: transparent;
+  border: 1px solid var(--glass-border);
+  color: var(--color-muted);
+  padding: 0.6rem 1.5rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.filter-btn.active, .filter-btn:hover {
+  border-color: var(--color-secundario);
+  color: var(--color-secundario);
+}
+
 /* === CATÁLOGO (GRID & CARDS) === */
 #catalogo {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 4rem 2.5rem;
-  padding: 6rem 3rem;
+  padding: 3rem 3rem 6rem;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -321,7 +392,7 @@ body::before {
   z-index: 5000;
   align-items: center;
   justify-content: center;
-  padding: 2rem;
+  padding: 1rem; /* Reducimos el margen externo para ganar espacio vertical */
 }
 
 .modal-overlay.active {
@@ -337,8 +408,8 @@ body::before {
 .modal-content {
   background: var(--color-fondo);
   width: 100%;
-  max-width: 1100px;
-  max-height: 90vh;
+  max-width: 800px;
+  max-height: 80vh;
   overflow: hidden;
   position: relative;
   box-shadow: 0 40px 80px rgba(0,0,0,0.2);
@@ -347,8 +418,34 @@ body::before {
 
 .modal-grid {
   display: grid;
-  grid-template-columns: 1.2fr 1fr;
-  min-height: 600px;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  min-height: 400px;
+}
+
+/* === ADAPTACIÓN RESPONSIVE PARA EL MODAL === */
+@media (max-width: 768px) {
+  .modal-content {
+    max-height: 95vh;
+    overflow-y: auto; /* Permite el scroll en todo el modal */
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr; /* Una sola columna: imagen arriba, info abajo */
+    min-height: auto;
+  }
+
+  .modal-visual {
+    height: 350px; /* Altura fija para la imagen en móviles */
+  }
+
+  .modal-info {
+    padding: 2.5rem 1.5rem;
+    overflow-y: visible; /* Desactiva el scroll interno de la info */
+  }
+
+  #modal-nombre {
+    font-size: 2rem; /* Título un poco más pequeño para móviles */
+  }
 }
 
 .modal-visual {
@@ -366,9 +463,10 @@ body::before {
 }
 
 .modal-gallery img {
-  min-width: 100%;
+  width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  object-fit: contain;
   flex-shrink: 0;
 }
 
@@ -424,7 +522,7 @@ body::before {
 }
 
 .modal-info {
-  padding: 4rem 3rem;
+  padding: 1.5rem 2rem; /* Menos padding arriba y abajo (1.5rem) manteniendo el lateral */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -433,8 +531,8 @@ body::before {
 
 #modal-nombre {
   font-family: var(--font-serif);
-  font-size: 2.5rem;
-  color: var(--color-primario);
+  font-size: 1.8rem;
+  color: var(--color-texto);
   line-height: 1.1;
   margin-bottom: 1.5rem;
 }
@@ -463,8 +561,8 @@ body::before {
 /* Botón de cierre elegante */
 .modal-close {
   position: absolute;
-  top: 2rem;
-  right: 2rem;
+  top: 1rem; /* Lo acercamos más al borde */
+  right: 1rem;
   background: var(--color-fondo);
   color: var(--color-primario);
   border: none;
