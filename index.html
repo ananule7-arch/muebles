@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🪑 Galvan's Shop - Muebles a Crédito</title>
+  <title>Galvan's - Muebles a Crédito</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -38,13 +38,22 @@
       </div>
       <div class="hero-content-modern">
         <div class="hero-header">
-          <span class="line-reveal">ESTUDIO GALVÁN</span>
+          <span class="line-reveal">GALVÁN'S</span>
         </div>
         <h1 class="hero-title-main">MUEBLES<br><span class="outline-text">A CRÉDITO</span></h1>
         <p class="hero-description">Piezas únicas fabricadas a mano donde la materia prima dicta la forma.</p>
         <div class="hero-scroll"><span>EXPLORAR</span><div class="scroll-line"></div></div>
       </div>
     </header>
+
+    <div class="filtros-container" id="filtros-categorias">
+      <button class="filter-btn active" data-categoria="todos">Todos</button>
+      <button class="filter-btn" data-categoria="roperos">Roperos</button>
+      <button class="filter-btn" data-categoria="camas">Camas</button>
+      <button class="filter-btn" data-categoria="mesas">Mesas</button>
+      <button class="filter-btn" data-categoria="negocio">Negocio</button>
+      <button class="filter-btn" data-categoria="cocina">Cocina</button>
+    </div>
 
     <main id="catalogo"></main>
 
@@ -115,6 +124,18 @@
         </div>
         
         <div class="form-group">
+          <label for="form-categoria">📂 Categoría:</label>
+          <select id="form-categoria">
+            <option value="otros">Seleccionar categoría...</option>
+            <option value="roperos">Roperos</option>
+            <option value="camas">Camas</option>
+            <option value="mesas">Mesas</option>
+            <option value="negocio">Muebles para negocio</option>
+            <option value="cocina">Cocina / Amoblamientos</option>
+          </select>
+        </div>
+
+        <div class="form-group">
           <label for="form-disponible">📦 Disponibilidad:</label>
           <select id="form-disponible">
             <option value="true">✅ Disponible</option>
@@ -153,7 +174,7 @@
       <div class="footer-grid-container">
         <div class="footer-brand">
           <div class="logo">Galvan<span>'s</span></div>
-          <p class="brand-statement">Mobiliario de autor diseñado para trascender generaciones. Artesanía argentina con visión contemporánea.</p>
+          <p class="brand-statement">Mobiliario de autor diseñado para trascender generaciones. Artesanía colombiana con visión contemporánea.</p>
         </div>
         
         <div class="footer-nav">
