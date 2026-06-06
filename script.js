@@ -13,6 +13,8 @@ let adminMode = false;
 let editandoId = null;
 let currentPhotoIndex = 0;
 let categoriaActiva = 'todos';
+let busquedaTermino = '';
+let ordenActivo = 'default';
 let currentPhotos = [];
 
 // === CACHÉ DE ELEMENTOS ===
@@ -26,6 +28,7 @@ const prevPhotoBtn = document.getElementById('prev-photo');
 const nextPhotoBtn = document.getElementById('next-photo');
 const modalNombre = document.getElementById('modal-nombre');
 const modalDetalles = document.getElementById('modal-detalles');
+const backToTopBtn = document.getElementById('back-to-top');
 const adminBtn = document.getElementById('admin-btn');
 const toastContainer = document.getElementById('toast-container');
 const loginModal = document.getElementById('login-modal');
@@ -43,6 +46,8 @@ const formCuotas = document.getElementById('form-cuotas');
 const formMedidas = document.getElementById('form-medidas');
 const formColor = document.getElementById('form-color');
 const formCategoria = document.getElementById('form-categoria');
+const searchInput = document.getElementById('search-input');
+const sortPriceSelect = document.getElementById('sort-price');
 const filtrosCategorias = document.getElementById('filtros-categorias');
 const formDisponible = document.getElementById('form-disponible');
 const formImagenesInputs = document.querySelectorAll('.form-imagen-input');
@@ -123,11 +128,69 @@ formOverlay.addEventListener('click', cerrarFormulario);
 prevPhotoBtn.addEventListener('click', () => navegarGaleria(-1));
 nextPhotoBtn.addEventListener('click', () => navegarGaleria(1));
 
+// === LÓGICA DE DESLIZAMIENTO (SWIPE/DRAG) PARA LA GALERÍA ===
+let isDraggingGallery = false;
+let swipeStartX = 0;
+let startTranslate = 0;
+
+modalGallery.addEventListener('pointerdown', (e) => {
+  if (currentPhotos.length <= 1) return;
+  isDraggingGallery = true;
+  swipeStartX = e.clientX;
+  startTranslate = -currentPhotoIndex * modalGallery.clientWidth;
+  modalGallery.style.transition = 'none';
+  modalGallery.setPointerCapture(e.pointerId);
+});
+
+modalGallery.addEventListener('pointermove', (e) => {
+  if (!isDraggingGallery) return;
+  const currentX = e.clientX;
+  const diffX = currentX - swipeStartX;
+  modalGallery.style.transform = `translateX(${startTranslate + diffX}px)`;
+});
+
+modalGallery.addEventListener('pointerup', (e) => {
+  if (!isDraggingGallery) return;
+  isDraggingGallery = false;
+  modalGallery.style.transition = 'transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)';
+  
+  const diffX = e.clientX - swipeStartX;
+  if (Math.abs(diffX) > 100) navegarGaleria(diffX > 0 ? -1 : 1);
+  else alternarFoto(currentPhotoIndex); // Reajusta a la foto actual si el arrastre fue corto
+});
+
+// Lógica de botón "Volver Arriba"
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 500) {
+    backToTopBtn.classList.add('show');
+  } else {
+    backToTopBtn.classList.remove('show');
+  }
+});
+
+backToTopBtn.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
 // Lógica para el botón Explorar del Hero
 document.addEventListener('click', (e) => {
   if (e.target.closest('.hero-scroll') || e.target.closest('.btn-explorar')) {
     catalogoContainer.scrollIntoView({ behavior: 'smooth' });
   }
+});
+
+// Lógica de teclado para accesibilidad
+window.addEventListener('keydown', (e) => {
+  if (!modal.classList.contains('active')) return;
+  
+  if (e.key === 'Escape') cerrarModal();
+  if (e.key === 'ArrowLeft') navegarGaleria(-1);
+  if (e.key === 'ArrowRight') navegarGaleria(1);
+});
+
+sortPriceSelect.addEventListener('change', (e) => {
+  ordenActivo = e.target.value;
+  renderCatalogo();
 });
 
 // Lógica de filtros de categoría
@@ -139,6 +202,12 @@ filtrosCategorias.addEventListener('click', (e) => {
     categoriaActiva = e.target.dataset.categoria;
     renderCatalogo();
   }
+});
+
+// Lógica de búsqueda
+searchInput.addEventListener('input', (e) => {
+  busquedaTermino = e.target.value.toLowerCase();
+  renderCatalogo();
 });
 
 catalogoContainer.addEventListener('click', (e) => {
@@ -193,16 +262,38 @@ function showToast(mensaje, tipo = 'success') {
 function renderCatalogo() {
   catalogoContainer.innerHTML = "";
 
-  const productosFiltrados = categoriaActiva === 'todos' 
-    ? productos 
-    : productos.filter(p => p.categoria === categoriaActiva);
+  let productosFiltrados = productos.filter(p => {
+    const matchCategoria = categoriaActiva === 'todos' || p.categoria === categoriaActiva;
+    const matchBusqueda = p.nombre.toLowerCase().includes(busquedaTermino);
+    return matchCategoria && matchBusqueda;
+  });
+
+  // Aplicar ordenamiento
+  if (ordenActivo === 'asc') {
+    productosFiltrados.sort((a, b) => a.precio - b.precio);
+  } else if (ordenActivo === 'desc') {
+    productosFiltrados.sort((a, b) => b.precio - a.precio);
+  }
 
   if (productosFiltrados.length === 0 && !adminMode) {
     catalogoContainer.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--color-muted);">
-        <h3 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 1rem; color: var(--color-primario);">El catálogo está vacío</h3>
-        <p>Pronto subiremos nuevos muebles. ¡Volvé a visitarnos!</p>
+        <h3 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 1rem; color: var(--color-primario);">No hay resultados</h3>
+        <p style="margin-bottom: 2rem;">Intenta con otra palabra o categoría.</p>
+        <button id="btn-reset-filters" style="background: none; border: 1px solid var(--color-secundario); color: var(--color-secundario); padding: 0.8rem 2rem; cursor: pointer; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 2px;">Limpiar Filtros</button>
       </div>`;
+    
+    document.getElementById('btn-reset-filters')?.addEventListener('click', () => {
+      busquedaTermino = '';
+      categoriaActiva = 'todos';
+      ordenActivo = 'default';
+      searchInput.value = '';
+      sortPriceSelect.value = 'default';
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.categoria === 'todos');
+      });
+      renderCatalogo();
+    });
   }
 
   productosFiltrados.forEach((p, index) => {
@@ -265,6 +356,11 @@ function abrirModal(id) {
   const cuota = formatoPrecio.format(p.precio / p.cuotas);
   const descuento = formatoPrecio.format(p.precio * 0.9);
   
+  // Generar link de WhatsApp dinámico
+  const btnWhatsApp = document.getElementById('btn-whatsapp-dynamic');
+  const mensaje = encodeURIComponent(`Hola Galván's! Me interesa el mueble: ${p.nombre} ($${p.precio}). ¿Me podrían dar más información?`);
+  btnWhatsApp.href = `https://wa.me/543482373872?text=${mensaje}`;
+
   // Resetear y cargar galería
   modalGallery.innerHTML = "";
   galleryDots.innerHTML = "";
@@ -279,6 +375,7 @@ function abrirModal(id) {
   currentPhotos.forEach((url, i) => {
     const img = document.createElement('img');
     img.src = url;
+    img.draggable = false; // Evita el fantasma de arrastre nativo
     modalGallery.appendChild(img);
     
     const dot = document.createElement('div');
@@ -436,7 +533,18 @@ async function guardarProducto() {
       disponible: formDisponible.value === "true"
     };
 
-    if (!productoData.nombre || isNaN(productoData.precio) || isNaN(productoData.cuotas)) {
+    // Validación visual mejorada
+    let camposInvalidos = false;
+    [formNombre, formPrecio, formCuotas].forEach(el => {
+      if (!el.value.trim() || (el.type === 'number' && isNaN(parseFloat(el.value)))) {
+        el.classList.add('input-error');
+        camposInvalidos = true;
+      } else {
+        el.classList.remove('input-error');
+      }
+    });
+
+    if (camposInvalidos) {
       showToast("Completa los campos obligatorios", "error");
       return;
     }
