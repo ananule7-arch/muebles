@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="img/logo.png">
   <title>Galvan's - Muebles a Crédito</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -26,7 +27,9 @@
     
     <nav class="navbar">
       <div class="nav-container">
-        <div class="logo">Galvan<span>'s</span></div>
+        <div class="logo">
+           Galvan's
+        </div>
         <button id="admin-btn" class="btn-admin-nav">ADMIN</button>
       </div>
     </nav>
@@ -45,6 +48,19 @@
         <div class="hero-scroll"><span>EXPLORAR</span><div class="scroll-line"></div></div>
       </div>
     </header>
+
+    <div class="search-section">
+      <div class="search-controls">
+        <input type="text" id="search-input" placeholder="¿Qué mueble estás buscando?">
+        <div class="sort-container">
+          <select id="sort-price" class="filter-select">
+            <option value="default">Ordenar por...</option>
+            <option value="asc">Menor precio</option>
+            <option value="desc">Mayor precio</option>
+          </select>
+        </div>
+      </div>
+    </div>
 
     <div class="filtros-container" id="filtros-categorias">
       <button class="filter-btn active" data-categoria="todos">Todos</button>
@@ -73,9 +89,7 @@
             <h2 id="modal-nombre"></h2>
             <div id="modal-detalles"></div>
             <div class="modal-actions">
-              <a href="https://wa.me/543482373872" target="_blank" class="btn-whatsapp" rel="noopener noreferrer">
-                CONSULTAR POR WHATSAPP
-              </a>
+              <a id="btn-whatsapp-dynamic" href="#" target="_blank" class="btn-whatsapp" rel="noopener noreferrer">CONSULTAR POR WHATSAPP</a>
             </div>
           </div>
         </div>
@@ -173,7 +187,7 @@
     <footer>
       <div class="footer-grid-container">
         <div class="footer-brand">
-          <div class="logo">Galvan<span>'s</span></div>
+          <div class="logo">Galvan's</div>
           <p class="brand-statement">Mobiliario de autor diseñado para trascender generaciones. Artesanía colombiana con visión contemporánea.</p>
         </div>
         
@@ -203,6 +217,8 @@
       </div>
     </footer>
   </div>
+
+  <button id="back-to-top" aria-label="Volver arriba">↑</button>
 
   <script>
     if (window.location.protocol === 'file:') {
