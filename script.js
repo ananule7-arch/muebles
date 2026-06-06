@@ -12,6 +12,7 @@ let productos = [];
 let adminMode = false;
 let editandoId = null;
 let currentPhotoIndex = 0;
+let categoriaActiva = 'todos';
 let currentPhotos = [];
 
 // === CACHÉ DE ELEMENTOS ===
@@ -41,6 +42,8 @@ const formPrecio = document.getElementById('form-precio');
 const formCuotas = document.getElementById('form-cuotas');
 const formMedidas = document.getElementById('form-medidas');
 const formColor = document.getElementById('form-color');
+const formCategoria = document.getElementById('form-categoria');
+const filtrosCategorias = document.getElementById('filtros-categorias');
 const formDisponible = document.getElementById('form-disponible');
 const formImagenesInputs = document.querySelectorAll('.form-imagen-input');
 const imagePreviews = document.querySelectorAll('.image-preview');
@@ -120,6 +123,24 @@ formOverlay.addEventListener('click', cerrarFormulario);
 prevPhotoBtn.addEventListener('click', () => navegarGaleria(-1));
 nextPhotoBtn.addEventListener('click', () => navegarGaleria(1));
 
+// Lógica para el botón Explorar del Hero
+document.addEventListener('click', (e) => {
+  if (e.target.closest('.hero-scroll') || e.target.closest('.btn-explorar')) {
+    catalogoContainer.scrollIntoView({ behavior: 'smooth' });
+  }
+});
+
+// Lógica de filtros de categoría
+filtrosCategorias.addEventListener('click', (e) => {
+  if (e.target.classList.contains('filter-btn')) {
+    document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+    e.target.classList.add('active');
+    
+    categoriaActiva = e.target.dataset.categoria;
+    renderCatalogo();
+  }
+});
+
 catalogoContainer.addEventListener('click', (e) => {
   const card = e.target.closest('.producto');
   if (e.target.closest('.btn-add-container')) {
@@ -172,7 +193,11 @@ function showToast(mensaje, tipo = 'success') {
 function renderCatalogo() {
   catalogoContainer.innerHTML = "";
 
-  if (productos.length === 0 && !adminMode) {
+  const productosFiltrados = categoriaActiva === 'todos' 
+    ? productos 
+    : productos.filter(p => p.categoria === categoriaActiva);
+
+  if (productosFiltrados.length === 0 && !adminMode) {
     catalogoContainer.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 4rem; color: var(--color-muted);">
         <h3 style="font-family: var(--font-serif); font-size: 2rem; margin-bottom: 1rem; color: var(--color-primario);">El catálogo está vacío</h3>
@@ -180,7 +205,7 @@ function renderCatalogo() {
       </div>`;
   }
 
-  productos.forEach((p, index) => {
+  productosFiltrados.forEach((p, index) => {
     const card = document.createElement("div");
     card.className = "producto";
     card.dataset.id = p.id; // Asignamos el ID directamente a la tarjeta
@@ -267,14 +292,14 @@ function abrirModal(id) {
 
   modalNombre.textContent = p.nombre;
   modalDetalles.innerHTML = `
-    <div style="margin-bottom: 2rem;">
-      <div class="precio-destacado" style="font-size: 1.8rem; margin-bottom: 1rem;">${formatoPrecio.format(p.precio)}</div>
-      <p style="margin-bottom: 0.5rem; color: var(--color-muted);"><strong>💳 Financiación:</strong> ${p.cuotas} cuotas sin interés de <strong>${cuota}</strong></p>
-      <p style="color: var(--color-muted);"><strong>💰 Precio contado:</strong> <span style="color: var(--color-primario); font-weight: bold;">${descuento}</span> (10% off)</p>
+    <div style="margin-bottom: 1.5rem;">
+      <div class="precio-destacado" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--color-texto);">${formatoPrecio.format(p.precio)}</div>
+      <p style="margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--color-muted);"><strong>💳 Financiación:</strong> ${p.cuotas} cuotas sin interés de <strong>${cuota}</strong></p>
+      <p style="font-size: 0.9rem; color: var(--color-muted);"><strong>💰 Precio contado:</strong> <span style="color: var(--color-secundario); font-weight: bold;">${descuento}</span> (10% off)</p>
     </div>
-    <div style="border-top: 1px solid var(--glass-border); padding-top: 2rem;">
-      <p style="margin-bottom: 0.8rem;"><strong>📏 Dimensiones:</strong> ${p.medidas}</p>
-      <p style="margin-bottom: 0.8rem;"><strong>🎨 Material/Color:</strong> ${p.color}</p>
+    <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; font-size: 0.85rem;">
+      <p style="margin-bottom: 0.6rem;"><strong>📏 Dimensiones:</strong> ${p.medidas}</p>
+      <p style="margin-bottom: 0.6rem;"><strong>🎨 Material/Color:</strong> ${p.color}</p>
       <p><strong>📦 Estado:</strong> ${p.disponible ? "<span style='color: #2E8B57;'>✅ Disponible</span>" : "<span style='color: #A50A1C;'>❌ Agotado</span>"}</p>
     </div>
   `;
@@ -352,6 +377,7 @@ function editarProducto(id) {
   formCuotas.value = p.cuotas;
   formMedidas.value = p.medidas;
   formColor.value = p.color;
+  formCategoria.value = p.categoria || "otros";
   formDisponible.value = p.disponible;
   
   imagePreviews.forEach((prev, i) => {
@@ -383,6 +409,7 @@ function limpiarFormulario() {
   formCuotas.value = "";
   formMedidas.value = "";
   formColor.value = "";
+  formCategoria.value = "otros";
   formDisponible.value = "true";
   formImagenesInputs.forEach(input => input.value = "");
   imagePreviews.forEach((prev, i) => {
@@ -405,6 +432,7 @@ async function guardarProducto() {
       cuotas: parseInt(formCuotas.value),
       medidas: formMedidas.value.trim(),
       color: formColor.value.trim(),
+      categoria: formCategoria.value,
       disponible: formDisponible.value === "true"
     };
 
