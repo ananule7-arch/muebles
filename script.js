@@ -354,7 +354,7 @@ function abrirModal(id) {
   if (!p) return;
   
   const cuota = formatoPrecio.format(p.precio / p.cuotas);
-  const descuento = formatoPrecio.format(p.precio * 0.9);
+  const descuento = formatoPrecio.format(p.precio * 0.7);
   
   // Generar link de WhatsApp dinámico
   const btnWhatsApp = document.getElementById('btn-whatsapp-dynamic');
