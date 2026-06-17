@@ -358,7 +358,7 @@ function abrirModal(id) {
   
   // Generar link de WhatsApp dinámico
   const btnWhatsApp = document.getElementById('btn-whatsapp-dynamic');
-  const mensaje = encodeURIComponent(`Hola Galván's! Me interesa el mueble: ${p.nombre} ($${p.precio}). ¿Me podrían dar más información?`);
+  const mensaje = encodeURIComponent(`Hola Galván's! Me interesa el mueble: ${p.nombre}). ¿Me podrían dar más información?`);
   btnWhatsApp.href = `https://wa.me/543482373872?text=${mensaje}`;
 
   // Resetear y cargar galería
