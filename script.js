@@ -392,7 +392,7 @@ function abrirModal(id) {
     <div style="margin-bottom: 1.5rem;">
       <div class="precio-destacado" style="font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--color-texto);">${formatoPrecio.format(p.precio)}</div>
       <p style="margin-bottom: 0.3rem; font-size: 0.9rem; color: var(--color-muted);"><strong>💳 Financiación:</strong> ${p.cuotas} cuotas sin interés de <strong>${cuota}</strong></p>
-      <p style="font-size: 0.9rem; color: var(--color-muted);"><strong>💰 Precio contado:</strong> <span style="color: var(--color-secundario); font-weight: bold;">${descuento}</span> (10% off)</p>
+      <p style="font-size: 0.9rem; color: var(--color-muted);"><strong>💰 Precio contado:</strong> <span style="color: var(--color-secundario); font-weight: bold;">${descuento}</span> (30% off)</p>
     </div>
     <div style="border-top: 1px solid var(--glass-border); padding-top: 1.5rem; font-size: 0.85rem;">
       <p style="margin-bottom: 0.6rem;"><strong>📏 Dimensiones:</strong> ${p.medidas}</p>
